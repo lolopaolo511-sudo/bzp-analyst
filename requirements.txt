@@ -1,0 +1,9 @@
+requests>=2.31.0
+pyyaml>=6.0.1
+python-dotenv>=1.0.0
+jinja2>=3.1.2
+markdown>=3.5.0
+weasyprint>=60.0
+pandas>=2.1.0
+rich>=13.7.0
+click>=8.1.7

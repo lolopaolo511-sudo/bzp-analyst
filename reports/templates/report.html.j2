@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Raport BZP — {{ date }}</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #1a1a2e; background: #f8f9fa; }
+  h1 { color: #0f3460; border-bottom: 3px solid #e94560; padding-bottom: 8px; }
+  h2 { color: #16213e; margin-top: 30px; }
+  .meta { background: #e8f4f8; border-left: 4px solid #0f3460; padding: 12px 16px; margin: 20px 0; border-radius: 4px; }
+  .notice { background: #fff; border: 1px solid #dce3ea; border-radius: 8px; padding: 20px; margin: 16px 0; box-shadow: 0 2px 4px rgba(0,0,0,.06); }
+  .notice h3 { margin: 0 0 8px 0; color: #0f3460; font-size: 1.05em; }
+  .notice-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.85em; color: #555; margin: 8px 0; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.78em; font-weight: 600; }
+  .badge-works { background: #fff3cd; color: #856404; }
+  .badge-services { background: #d1ecf1; color: #0c5460; }
+  .badge-supplies { background: #d4edda; color: #155724; }
+  .badge-other { background: #e2e3e5; color: #383d41; }
+  .score { font-weight: bold; color: #e94560; }
+  .score-high { color: #28a745; }
+  .score-mid { color: #fd7e14; }
+  .score-low { color: #dc3545; }
+  .summary { font-style: italic; color: #444; margin: 8px 0; border-left: 3px solid #ccc; padding-left: 12px; }
+  .cost-box { background: #f0fff4; border: 1px solid #c3e6cb; border-radius: 6px; padding: 10px 14px; margin-top: 10px; font-size: 0.88em; }
+  .cost-box strong { color: #155724; }
+  .deadline { font-weight: bold; }
+  .deadline-urgent { color: #dc3545; }
+  .deadline-ok { color: #28a745; }
+  .link a { color: #0f3460; font-size: 0.85em; }
+  .footer { margin-top: 40px; color: #888; font-size: 0.8em; border-top: 1px solid #dce3ea; padding-top: 12px; }
+  table.breakdown { width: 100%; border-collapse: collapse; font-size: 0.82em; margin-top: 8px; }
+  table.breakdown td, table.breakdown th { padding: 4px 8px; text-align: left; border-bottom: 1px solid #eee; }
+  table.breakdown th { background: #f0f4f8; }
+  table.breakdown tr:last-child td { font-weight: bold; background: #f0fff4; }
+  .stats { display: flex; gap: 24px; flex-wrap: wrap; }
+  .stat-card { background: #fff; border-radius: 8px; padding: 16px 20px; border: 1px solid #dce3ea; min-width: 140px; }
+  .stat-card .num { font-size: 2em; font-weight: bold; color: #0f3460; }
+  .stat-card .lbl { font-size: 0.8em; color: #666; margin-top: 4px; }
+</style>
+</head>
+<body>
+<h1>Raport BZP — {{ date }}</h1>
+
+<div class="meta">
+  <strong>Wygenerowano:</strong> {{ generated_at }}<br>
+  <strong>Zakres dat:</strong> {{ date_from }} — {{ date_to }}<br>
+  <strong>Kody CPV:</strong> {{ cpv_codes | join(', ') }}<br>
+  <strong>Słowa kluczowe:</strong> {{ keywords | join(', ') or '(wszystkie)' }}
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="num">{{ total_fetched }}</div><div class="lbl">Pobrano ogłoszeń</div></div>
+  <div class="stat-card"><div class="num">{{ total_filtered }}</div><div class="lbl">Po filtrach</div></div>
+  <div class="stat-card"><div class="num">{{ notices | length }}</div><div class="lbl">Pasujących</div></div>
+</div>
+
+<h2>Dopasowane ogłoszenia ({{ notices | length }})</h2>
+
+{% for n in notices %}
+<div class="notice">
+  <h3>{{ loop.index }}. {{ n.title | truncate(150) }}</h3>
+  <div class="notice-meta">
+    {% if n.order_type == 'Works' %}
+      <span class="badge badge-works">{{ n.order_type_label }}</span>
+    {% elif n.order_type == 'Services' %}
+      <span class="badge badge-services">{{ n.order_type_label }}</span>
+    {% elif n.order_type == 'Supplies' %}
+      <span class="badge badge-supplies">{{ n.order_type_label }}</span>
+    {% else %}
+      <span class="badge badge-other">{{ n.order_type_label }}</span>
+    {% endif %}
+    <span>📍 {{ n.organization }}, {{ n.city }}{% if n.province_name %} ({{ n.province_name }}){% endif %}</span>
+    <span>📋 {{ n.notice_type_label }}</span>
+    {% if n.publication_date %}
+    <span>📅 Opublikowano: {{ n.publication_date.strftime('%d.%m.%Y') }}</span>
+    {% endif %}
+    {% if n.tender_value_pln %}
+    <span>💰 ~{{ '{:,.0f}'.format(n.tender_value_pln).replace(',', ' ') }} PLN</span>
+    {% endif %}
+  </div>
+
+  {% if n.summary %}
+  <div class="summary">{{ n.summary }}</div>
+  {% endif %}
+
+  <div class="notice-meta">
+    <span><strong>CPV:</strong> {{ n.cpv_codes | map(attribute='code') | join(', ') }}</span>
+    {% if n.submission_deadline %}
+    <span class="deadline {% if n.days_until_deadline is not none and n.days_until_deadline <= 7 %}deadline-urgent{% elif n.days_until_deadline is not none and n.days_until_deadline >= 8 %}deadline-ok{% endif %}">
+      ⏰ Termin: {{ n.submission_deadline.strftime('%d.%m.%Y %H:%M') }}
+      {% if n.days_until_deadline is not none %}(za {{ n.days_until_deadline }} dni){% endif %}
+    </span>
+    {% endif %}
+    <span class="score {% if n.fit_score >= 0.7 %}score-high{% elif n.fit_score >= 0.4 %}score-mid{% else %}score-low{% endif %}">
+      ⭐ Dopasowanie: {{ '%.0f'|format(n.fit_score * 100) }}%
+    </span>
+  </div>
+
+  {% if n.cost_estimate %}
+  <div class="cost-box">
+    <strong>Szacunek kosztów oferty:</strong>
+    {{ n.cost_estimate.summary_line() }}<br>
+    {% if n.cost_estimate.distance_km > 0 %}
+    <span>Dystans: {{ n.cost_estimate.distance_km:.0f }} km | Transport: {{ '{:,.0f}'.format(n.cost_estimate.transport_cost).replace(',', ' ') }} PLN</span>
+    {% endif %}
+    <table class="breakdown">
+      <tr><th>Pozycja</th><th>Kwota PLN</th></tr>
+      {% for row in n.cost_estimate.breakdown %}
+      <tr><td>{{ row.pozycja }}</td><td>{{ '{:,.0f}'.format(row.kwota).replace(',', ' ') }}</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% endif %}
+
+  <div class="link">🔗 <a href="{{ n.link }}" target="_blank">{{ n.bzp_number }} — pełne ogłoszenie</a></div>
+</div>
+{% else %}
+<p><em>Brak ogłoszeń spełniających kryteria w tym okresie.</em></p>
+{% endfor %}
+
+{% if rejected %}
+<h2>Odrzucone ({{ rejected | length }})</h2>
+<details>
+<summary>Pokaż odrzucone ogłoszenia</summary>
+<ul>
+{% for bzp_num, reason in rejected %}
+<li><code>{{ bzp_num }}</code> — {{ reason }}</li>
+{% endfor %}
+</ul>
+</details>
+{% endif %}
+
+<div class="footer">
+  Wygenerowano przez bzp-analyst | e-Zamówienia API bez klucza |
+  <a href="https://ezamowienia.gov.pl/mo-client-board/bzp/list">Otwórz BZP</a>
+</div>
+</body>
+</html>

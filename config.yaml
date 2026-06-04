@@ -1,0 +1,80 @@
+# BZP Analyst — konfiguracja
+# Edytuj sekcje: cpv_codes, keywords, company, rates
+
+# === CO SZUKAMY ===
+cpv_codes:
+  # Kody CPV które Cię interesują (6-8 cyfr prefix)
+  # Przykłady:
+  - "45000000"   # Roboty budowlane
+  - "45300000"   # Roboty budowlane instalacyjne
+  - "45310000"   # Roboty elektryczne
+  - "72000000"   # Usługi IT
+  - "72500000"   # Usługi komputerowe
+  - "79000000"   # Usługi biznesowe
+
+keywords:
+  # Słowa kluczowe w opisie ogłoszenia (AND: wszystkie muszą pasować; OR: lista wariantów)
+  include:
+    - "informatyczny"
+    - "serwis"
+    - "instalacja"
+  exclude:
+    - "rozbiórka"
+    - "wyburzenie"
+
+notice_types:
+  # Jakie typy ogłoszeń pobierać
+  - "SmallContractNotice"    # Zamówienia małe (poniżej progu)
+  - "ContractNotice"         # Ogłoszenie o zamówieniu (krajowe)
+  # - "ContractNoticeEU"     # Powyżej progu UE
+
+provinces:
+  # Kody województw NUTS (puste = cała Polska)
+  # PL21=Małopolskie, PL22=Śląskie, PL12=Mazowieckie, PL41=Wielkopolskie
+  # PL51=Dolnośląskie, PL63=Pomorskie, PL61=Kujawsko-Pomorskie
+  # Puste = pobieramy z całej Polski (filtrujemy lokalnie)
+  - ""   # wszystkie
+
+# === NASZE STAWKI ===
+company:
+  name: "Twoja Firma Sp. z o.o."
+  base_city: "Warszawa"        # Baza firmy (do kalkulacji transportu)
+  base_lat: 52.2297
+  base_lon: 21.0122
+
+rates:
+  hourly_rate_pln: 120.0       # PLN/h robocizna netto
+  km_rate_pln: 0.89            # PLN/km (przejazd)
+  daily_allowance_pln: 56.0    # dieta dzienna PLN
+  hotel_rate_pln: 300.0        # nocleg PLN/noc
+  equipment_day_rate_pln: 500.0 # wynajem sprzętu PLN/dzień
+  margin_percent: 25.0          # marża %
+  vat_percent: 23.0             # VAT %
+
+# === PROGI FILTROWANIA ===
+filters:
+  min_value_pln: 0           # min wartość zamówienia (0 = bez limitu)
+  max_deadline_days: 30      # max termin składania ofert (dni od dziś, 0 = bez limitu)
+  min_fit_score: 0.3         # min score dopasowania (0-1)
+
+# === HARMONOGRAM ===
+schedule:
+  run_hour: 7               # godzina uruchomienia
+  run_minute: 0
+  days_back: 1              # ile dni wstecz pobierać ogłoszeń
+
+# === DOSTARCZANIE RAPORTÓW ===
+notifications:
+  output_dir: "~/bzp-analyst/reports/output"
+  slack_webhook_url: ""      # opcjonalnie (z .env: BZP_SLACK_WEBHOOK)
+  telegram_bot_token: ""     # opcjonalnie (z .env: BZP_TELEGRAM_TOKEN)
+  telegram_chat_id: ""       # opcjonalnie (z .env: BZP_TELEGRAM_CHAT)
+  email_to: ""               # opcjonalnie (z .env)
+
+# === OLLAMA (LLM streszczenia) ===
+ollama:
+  base_url: "http://localhost:11434"
+  model: "deepseek-coder-v2:16b"
+  fallback_model: "llama3.2:3b"
+  timeout_s: 60
+  use_llm: true              # false = tylko regex matching, bez LLM
