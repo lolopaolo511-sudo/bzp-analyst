@@ -53,6 +53,7 @@ class BZPQuery:
     page_size: int = 100
     search_text: Optional[str] = None
     provinces: Optional[list[str]] = None
+    max_pages: int = 5  # limit stron (100 wyników/strona × 5 = 500 max per zapytanie)
 
     def date_range(self) -> tuple[str, str]:
         today = date.today()
@@ -160,8 +161,11 @@ class BZPClient:
                     yield item
                 if len(items) < query.page_size:
                     break  # ostatnia strona
+                if query.max_pages > 0 and page >= query.max_pages:
+                    logger.debug("Osiągnięto limit stron (%d) dla %s", query.max_pages, notice_type)
+                    break
                 page += 1
-                logger.info("Pobrano stronę %d (%s)", page, notice_type)
+                logger.debug("Pobrano stronę %d (%s)", page, notice_type)
 
     def fetch_by_keywords(self, keywords: list[str], query: BZPQuery) -> list[dict]:
         """Pobiera ogłoszenia dla wielu słów kluczowych (fan-out), deduplikuje."""

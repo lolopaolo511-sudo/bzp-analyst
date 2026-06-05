@@ -41,6 +41,7 @@ class WorkflowConfig:
     ollama_model: str = "deepseek-coder-v2:16b"
     ollama_fallback: str = "llama3.2:3b"
     use_llm: bool = True
+    max_pages_per_query: int = 5  # bezpieczny limit (500 wyników na keyword)
 
 
 @dataclass
@@ -58,6 +59,7 @@ def _fetch_for_keyword(
     notice_types: list[str],
     days_back: int,
     provinces: list[str],
+    max_pages: int = 5,
 ) -> list[dict]:
     """Pobiera ogłoszenia dla jednego słowa kluczowego."""
     query = BZPQuery(
@@ -65,6 +67,7 @@ def _fetch_for_keyword(
         days_back=days_back,
         search_text=kw if kw else None,
         provinces=provinces or None,
+        max_pages=max_pages,
     )
     return list(client.fetch_all(query))
 
@@ -86,6 +89,7 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
             pool.submit(
                 _fetch_for_keyword,
                 client, kw, config.notice_types, config.days_back, config.provinces,
+                config.max_pages_per_query,
             ): kw
             for kw in keywords
         }
