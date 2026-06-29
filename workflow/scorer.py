@@ -85,12 +85,20 @@ def score_notice(
     Oblicza fit_score (0.0–1.0) dla ogłoszenia.
 
     Wagi domyślne: CPV 40%, keyword 35%, deadline 15%, value 10%.
+    Twarde reguły: jeśli oba CPV i słowa kluczowe dają 0 → odrzucamy.
     """
     w = weights or {"cpv": 0.40, "kw": 0.35, "deadline": 0.15, "value": 0.10}
 
     cpv_s = _cpv_match_score(notice.cpv_prefixes, target_cpvs)
-    full_text = f"{notice.title} {notice.organization} {' '.join(c.description for c in notice.cpv_codes)}"
-    kw_s = _keyword_score(full_text, include_keywords, exclude_keywords)
+    # Szukamy słów kluczowych tylko w tytule i opisach CPV (nie w nazwie organizacji)
+    kw_text = f"{notice.title} {' '.join(c.description for c in notice.cpv_codes)}"
+    kw_s = _keyword_score(kw_text, include_keywords, exclude_keywords)
+
+    # Twarda reguła: brak dopasowania w obu wymiarach = wyrzucamy
+    # (deadline i value NIE mogą same przepychać wyniku przez próg)
+    if cpv_s == 0.0 and kw_s == 0.0:
+        return 0.0
+
     dl_s = _deadline_score(notice.days_until_deadline)
     val_s = _value_score(notice.tender_value_pln)
 

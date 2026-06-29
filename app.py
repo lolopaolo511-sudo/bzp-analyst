@@ -113,7 +113,11 @@ with st.sidebar:
     st.divider()
 
     days_back = st.slider("Ogłoszenia z ostatnich N dni", 1, 30, 7)
-    min_score = st.slider("Min. score dopasowania", 0.0, 1.0, 0.15, step=0.05)
+    min_score = st.slider(
+        "Min. score dopasowania",
+        0.0, 1.0, 0.35, step=0.05,
+        help="CPV 40% + słowa kluczowe 35% + termin 15% + wartość 10%. Zalecane: 0.35+",
+    )
     max_deadline = st.slider(
         "Max termin składania (dni)",
         0, 90, 0,

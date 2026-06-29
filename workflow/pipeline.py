@@ -124,19 +124,30 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
             exclude_keywords=config.keywords_exclude,
         )
 
-    # Client-side CPV filter: jeśli mamy CPV, odrzucamy ogłoszenia bez żadnego dopasowania
+    # Client-side CPV filter: jeśli mamy CPV, odrzucamy ogłoszenia bez żadnego dopasowania.
+    # Porównujemy pierwsze 4 cyfry (nie 2!) dla precyzji. Fallback na fit_score usunięty —
+    # był źródłem fałszywych trafień (np. badania archeologiczne przy szukaniu nagłośnienia).
     if config.cpv_codes:
         filtered_by_cpv: list[NoticeRecord] = []
         for n in notices:
-            cpv_s = sum(
-                1 for nc in n.cpv_prefixes
+            cpv_match = any(
+                nc.replace("-", "")[:4] == tc.replace("-", "")[:4]
+                for nc in n.cpv_prefixes
                 for tc in config.cpv_codes
-                if nc.replace("-", "")[:2] == tc.replace("-", "")[:2]
             )
-            # Przepuszczamy jeśli choć 2 pierwsze cyfry CPV pasują LUB fit_score > 0.4
-            if cpv_s > 0 or n.fit_score >= 0.4:
+            if cpv_match:
                 filtered_by_cpv.append(n)
-        # Jeśli filtr CPV wycinałby wszystko — przepuszczamy bez filtra (zachowawczo)
+        # Jeśli filtr CPV wycinałby wszystko (np. ogłoszenia bez kodu CPV w API)
+        # — wróć do filtra 2-cyfrowego zamiast przepuszczać wszystko
+        if not filtered_by_cpv:
+            for n in notices:
+                cpv_match_loose = any(
+                    nc.replace("-", "")[:2] == tc.replace("-", "")[:2]
+                    for nc in n.cpv_prefixes
+                    for tc in config.cpv_codes
+                )
+                if cpv_match_loose:
+                    filtered_by_cpv.append(n)
         if filtered_by_cpv:
             notices = filtered_by_cpv
 
