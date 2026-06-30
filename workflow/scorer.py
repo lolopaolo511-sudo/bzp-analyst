@@ -23,6 +23,14 @@ SYNONYMS: dict[str, list[str]] = {
     # Scena / oświetlenie
     "scena": ["estrada", "podium", "mównica", "scena plenerowa"],
     "oświetlenie sceniczne": ["lighting", "oświetlenie imprezy", "iluminacja sceniczna"],
+    # Wyjazdy szkoleniowe / studyjne
+    "wyjazd szkoleniowy": ["szkolenie wyjazdowe", "wyjazd edukacyjny", "trip szkoleniowy"],
+    "wyjazd studyjny": ["wizyta studyjna", "study tour", "study visit", "wyjazd studyjny"],
+    "wizyta studyjna": ["wyjazd studyjny", "study tour", "wizyta w terenie"],
+    "targi": ["wystawa", "expo", "targi branżowe", "targi międzynarodowe"],
+    "expo": ["targi", "wystawa", "ekspozycja", "targi branżowe"],
+    "konferencja wyjazdowa": ["wyjazd konferencyjny", "szkolenie konferencyjne"],
+    "wyjazd zagraniczny": ["wyjazd za granicę", "podróż zagraniczna", "delegacja zagraniczna"],
 }
 
 

@@ -54,6 +54,40 @@ CPV_PRESETS: dict[str, dict] = {
         ],
         "exclude": [],
     },
+    "🎓 Wyjazdy szkoleniowe / Studyjne / Targi": {
+        "cpv": [
+            "80500000",  # Usługi szkoleniowe
+            "80000000",  # Usługi edukacyjne i szkoleniowe
+            "80510000",  # Szkolenia specjalistyczne
+            "80530000",  # Szkolenia zawodowe (rolnicy, urzędnicy)
+            "80570000",  # Szkolenia z rozwoju osobistego
+            "80521000",  # Opracowywanie programów szkoleniowych
+            "63510000",  # Usługi biur podróży (wyjazdy organizowane)
+            "63516000",  # Usługi zarządzania podróżą służbową
+            "63500000",  # Usługi turystyczne i pomocnicze transportu
+            "55120000",  # Hotel + sala konferencyjna (szkolenia wyjazdowe)
+            "55130000",  # Inne usługi hotelarskie
+            "79951000",  # Usługi organizacji seminariów
+            "79952000",  # Usługi organizacji imprez / konferencji
+        ],
+        "keywords": [
+            "wyjazd szkoleniowy",
+            "wyjazd studyjny",
+            "wizyta studyjna",
+            "szkolenie wyjazdowe",
+            "wyjazd edukacyjny",
+            "szkolenie dla rolników",
+            "szkolenie dla urzędników",
+            "wyjazd integracyjny",
+            "targi",
+            "expo",
+            "konferencja wyjazdowa",
+            "wyjazd zagraniczny",
+            "delegacja",
+            "study tour",
+        ],
+        "exclude": ["budowa", "remont", "dostawa sprzętu"],
+    },
     "💻 IT / Informatyka": {
         "cpv": ["72000000", "72500000", "48000000", "72300000", "72200000"],
         "keywords": ["informatyczny", "serwis", "oprogramowanie", "system", "wdrożenie"],
