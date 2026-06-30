@@ -67,8 +67,8 @@ def summarize(
                 text = resp.json().get("response", "").strip()
                 if text:
                     return _clean(text)
-        except requests.RequestException as e:
-            logger.debug("Ollama (%s) niedostępna: %s", mdl, e)
+        except Exception as e:
+            logger.debug("Ollama (%s) błąd: %s", mdl, e)
 
     return _fallback_summary(title, org, city, deadline)
 
