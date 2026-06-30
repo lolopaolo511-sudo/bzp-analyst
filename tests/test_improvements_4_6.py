@@ -157,9 +157,11 @@ class TestSearchTextPreFilter:
         cfg = WorkflowConfig()
         assert hasattr(cfg, "use_api_search_text")
 
-    def test_use_api_search_text_default_true(self):
+    def test_use_api_search_text_default_false(self):
+        # Domyślnie False — BZP SearchText przeszukuje pełny tekst dokumentu
+        # (nie tylko tytuł), co daje masę false-positives. Filtrujemy lokalnie.
         cfg = WorkflowConfig()
-        assert cfg.use_api_search_text is True
+        assert cfg.use_api_search_text is False
 
     def test_pipeline_passes_search_text_when_enabled(self):
         """Gdy use_api_search_text=True, pipeline przekazuje keyword jako search_text do BZPQuery."""
