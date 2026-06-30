@@ -6,6 +6,25 @@ from typing import Optional
 
 from sources.normalizer import NoticeRecord
 
+# ---------------------------------------------------------------------------
+# [4] Słownik synonimów — rozszerza każde słowo kluczowe o powiązane formy
+# ---------------------------------------------------------------------------
+SYNONYMS: dict[str, list[str]] = {
+    # Nagłośnienie / audio
+    "nagłośnienie": ["nagłaśnianie", "akustyka", "foniczny", "pa system", "sound system"],
+    "dźwięk": ["audio", "akustyczny", "foniczny", "głośnik", "dźwiękowy"],
+    "sprzęt audio": ["sprzęt dźwiękowy", "system audio", "system dźwiękowy", "system pa", "nagłośnieniowy"],
+    # Imprezy / eventy
+    "impreza": ["event", "festyn", "piknik", "uroczystość", "obchody", "gala"],
+    "wydarzenie": ["event", "impreza", "uroczystość", "festyn"],
+    "festiwal": ["festyn", "przegląd", "konkurs artystyczny"],
+    "koncert": ["spektakl muzyczny", "występ", "recital", "show muzyczne"],
+    "organizacja imprezy": ["organizacja eventu", "organizacja uroczystości", "obsługa imprezy"],
+    # Scena / oświetlenie
+    "scena": ["estrada", "podium", "mównica", "scena plenerowa"],
+    "oświetlenie sceniczne": ["lighting", "oświetlenie imprezy", "iluminacja sceniczna"],
+}
+
 
 def _cpv_match_score(notice_cpvs: list[str], target_cpvs: list[str]) -> float:
     """Score CPV: prefix matching na różnych głębokościach."""
@@ -43,8 +62,23 @@ def _kw_in_text(kw: str, text: str) -> bool:
     return False
 
 
+def _expand_with_synonyms(keywords: list[str]) -> list[str]:
+    """Rozszerza listę słów kluczowych o synonimy ze słownika SYNONYMS."""
+    seen: set[str] = set()
+    expanded: list[str] = []
+    for kw in keywords:
+        if kw not in seen:
+            seen.add(kw)
+            expanded.append(kw)
+        for syn in SYNONYMS.get(kw.lower(), []):
+            if syn not in seen:
+                seen.add(syn)
+                expanded.append(syn)
+    return expanded
+
+
 def _keyword_score(text: str, include_kws: list[str], exclude_kws: list[str]) -> float:
-    """Score słów kluczowych w tekście ogłoszenia."""
+    """Score słów kluczowych w tekście ogłoszenia (z rozszerzeniem synonimów)."""
     if not include_kws:
         return 0.5  # brak konfiguracji = neutralny
     text_low = text.lower()
@@ -52,8 +86,13 @@ def _keyword_score(text: str, include_kws: list[str], exclude_kws: list[str]) ->
     for kw in exclude_kws:
         if _kw_in_text(kw, text_low):
             return 0.0
-    matches = sum(1 for kw in include_kws if _kw_in_text(kw, text_low))
-    return matches / len(include_kws)
+    # Rozszerzamy o synonimy — liczymy hit jeśli keyword LUB którykolwiek synonim matchuje
+    hits = 0
+    for kw in include_kws:
+        candidates = [kw] + SYNONYMS.get(kw.lower(), [])
+        if any(_kw_in_text(c, text_low) for c in candidates):
+            hits += 1
+    return hits / len(include_kws)
 
 
 def _deadline_score(days_left: Optional[int]) -> float:

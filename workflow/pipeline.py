@@ -38,6 +38,7 @@ class WorkflowConfig:
     min_value_pln: float = 0.0
     max_value_pln: float = 0.0
     max_workers: int = 4
+    use_api_search_text: bool = True   # [5] pre-filtr przez BZP SearchText
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = "deepseek-coder-v2:16b"
     ollama_fallback: str = "llama3.2:3b"
@@ -81,7 +82,13 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
     client = BZPClient()
 
     # --- 1. fan_out: pobieranie równoległe po słowach kluczowych ---
-    keywords = config.keywords_include or [""]  # puste = bez filtra tekstowego
+    # [5] Gdy use_api_search_text=True: każde słowo kluczowe → osobne zapytanie do BZP API
+    # (API filtruje server-side → mniej danych do pobrania).
+    # Gdy False: jedno zapytanie bez filtra tekstowego (pobiera wszystko, wolniejsze).
+    if config.use_api_search_text and config.keywords_include:
+        keywords = config.keywords_include
+    else:
+        keywords = [""]  # puste = bez filtra tekstowego
     logger.info("fan_out: %d słów kluczowych, typy: %s", len(keywords), config.notice_types)
 
     raw_items: dict[str, dict] = {}  # dedup po objectId

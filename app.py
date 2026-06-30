@@ -1,6 +1,7 @@
 """BZP Analyst — Streamlit Web UI"""
 from __future__ import annotations
 
+import io
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -328,12 +329,12 @@ st.dataframe(
 )
 
 # ---------------------------------------------------------------------------
-# Pobieranie CSV
+# Pobieranie — CSV i Excel [6]
 # ---------------------------------------------------------------------------
-csv_cols = ["_nr", "Score", "_score_raw", "Składowe", "Tytuł", "Zamawiający",
-            "Miasto", "Województwo", "_deadline_days", "Termin", "Typ", "CPV",
-            "_value_pln", "Link BZP"]
-csv_df = df[csv_cols].rename(columns={
+export_cols = ["_nr", "Score", "_score_raw", "Składowe", "Tytuł", "Zamawiający",
+               "Miasto", "Województwo", "_deadline_days", "Termin", "Typ", "CPV",
+               "_value_pln", "Link BZP"]
+export_df = df[export_cols].rename(columns={
     "_nr": "Nr BZP",
     "_score_raw": "Score (0-1)",
     "_deadline_days": "Termin (dni)",
@@ -341,11 +342,34 @@ csv_df = df[csv_cols].rename(columns={
 })
 
 today_str = datetime.today().strftime("%Y%m%d")
-st.download_button(
-    label="⬇️ Pobierz wyniki jako CSV",
-    data=csv_df.to_csv(index=False).encode("utf-8"),
+
+# Generuj XLSX z autofiltrami i zamrożonym nagłówkiem
+def _to_excel(data: pd.DataFrame) -> bytes:
+    buf = io.BytesIO()
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
+        data.to_excel(writer, index=False, sheet_name="Przetargi BZP")
+        ws = writer.sheets["Przetargi BZP"]
+        ws.freeze_panes = "A2"
+        ws.auto_filter.ref = ws.dimensions
+        # Szerokość kolumn
+        for col_cells in ws.columns:
+            max_len = max((len(str(c.value or "")) for c in col_cells), default=10)
+            ws.column_dimensions[col_cells[0].column_letter].width = min(max_len + 2, 60)
+    return buf.getvalue()
+
+
+dl_col1, dl_col2 = st.columns(2)
+dl_col1.download_button(
+    label="⬇️ Pobierz CSV",
+    data=export_df.to_csv(index=False).encode("utf-8"),
     file_name=f"bzp_wyniki_{today_str}.csv",
     mime="text/csv",
+)
+dl_col2.download_button(
+    label="📊 Pobierz Excel (.xlsx)",
+    data=_to_excel(export_df),
+    file_name=f"bzp_wyniki_{today_str}.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 )
 
 # ---------------------------------------------------------------------------
