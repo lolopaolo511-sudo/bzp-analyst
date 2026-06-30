@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from sources.normalizer import NoticeRecord, PROVINCE_NAMES
 from workflow.pipeline import WorkflowConfig, WorkflowResult, run_pipeline
+from workflow.feedback import save_feedback, feedback_stats, compute_adjusted_weights, load_feedback
 
 # ---------------------------------------------------------------------------
 # Konfiguracja strony
@@ -152,6 +153,20 @@ with st.sidebar:
     )
 
     st.divider()
+
+    # --- [8] Panel feedbacku (zwijany) ---
+    with st.expander("📊 Statystyki feedbacku"):
+        stats = feedback_stats()
+        if stats["total"] == 0:
+            st.caption("Brak feedbacku — oceń wyniki przyciskami 👍/👎 przy przetargach.")
+        else:
+            fc1, fc2, fc3 = st.columns(3)
+            fc1.metric("Łącznie ocen", stats["total"])
+            fc2.metric("👍 Trafnych", stats["positive"])
+            fc3.metric("👎 Błędnych", stats["negative"])
+            if stats["accuracy"] is not None:
+                st.progress(stats["accuracy"], text=f"Trafność: {stats['accuracy']:.0%}")
+
     search_btn = st.button("🔍 Szukaj przetargów", type="primary", width="stretch")
 
 # ---------------------------------------------------------------------------
@@ -188,6 +203,9 @@ Każdy wynik zawiera link bezpośrednio do ogłoszenia na BZP.
 keywords = [k.strip() for k in kw_input.replace("\n", ",").split(",") if k.strip()]
 excludes = [k.strip() for k in excl_input.split(",") if k.strip()]
 cpv_codes = [c.strip() for c in cpv_input.strip().splitlines() if c.strip()]
+
+# [8] Wagi skorygowane feedbackiem (jeśli wystarczająco danych)
+adjusted_weights = compute_adjusted_weights()
 
 config = WorkflowConfig(
     cpv_codes=cpv_codes,
@@ -327,6 +345,32 @@ st.dataframe(
         "CPV": st.column_config.TextColumn("CPV", width="medium"),
     },
 )
+
+# ---------------------------------------------------------------------------
+# [8] Feedback loop — oceny przetargów 👍/👎
+# ---------------------------------------------------------------------------
+with st.expander(f"👍/👎 Oceń wyniki ({len(notices)} przetargów)", expanded=False):
+    st.caption("Twoje oceny poprawią dopasowanie wyników w przyszłości.")
+    fb_cols = st.columns([4, 1, 1])
+    fb_cols[0].markdown("**Przetarg**")
+    fb_cols[1].markdown("**👍**")
+    fb_cols[2].markdown("**👎**")
+    for n in notices[:20]:   # maks. 20 w widgecie
+        fc1, fc2, fc3 = st.columns([4, 1, 1])
+        fc1.markdown(f"*{n.title[:80]}{'…' if len(n.title) > 80 else ''}*  \n"
+                     f"<small>{n.organization[:40]}</small>", unsafe_allow_html=True)
+        if fc2.button("👍", key=f"fb_pos_{n.id}"):
+            save_feedback(n.id, n.title, n.fit_score,
+                          n.raw.get("_score_breakdown", {}), rating=1)
+            st.toast(f"Oceniono pozytywnie: {n.title[:50]}")
+        if fc3.button("👎", key=f"fb_neg_{n.id}"):
+            save_feedback(n.id, n.title, n.fit_score,
+                          n.raw.get("_score_breakdown", {}), rating=-1)
+            st.toast(f"Oceniono negatywnie: {n.title[:50]}")
+
+    fb_stats = feedback_stats()
+    if fb_stats["total"] >= 5:
+        st.info(f"Zebrano {fb_stats['total']} ocen — wagi scorera są automatycznie dostosowywane.")
 
 # ---------------------------------------------------------------------------
 # Pobieranie — CSV i Excel [6]
