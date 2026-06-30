@@ -38,7 +38,9 @@ class WorkflowConfig:
     min_value_pln: float = 0.0
     max_value_pln: float = 0.0
     max_workers: int = 4
-    use_api_search_text: bool = True   # [5] pre-filtr przez BZP SearchText
+    use_api_search_text: bool = False  # BZP SearchText przeszukuje pełny tekst dokumentu
+    #                                    (tytuł + OPZ + klauzule), co daje fałszywe trafienia.
+    #                                    False = pobieramy po dacie, filtrujemy CPV+scorer lokalnie.
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = "deepseek-coder-v2:16b"
     ollama_fallback: str = "llama3.2:3b"
@@ -139,8 +141,11 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
         )
 
     # Client-side CPV filter: jeśli mamy CPV, odrzucamy ogłoszenia bez żadnego dopasowania.
-    # Porównujemy pierwsze 4 cyfry (nie 2!) dla precyzji. Fallback na fit_score usunięty —
-    # był źródłem fałszywych trafień (np. badania archeologiczne przy szukaniu nagłośnienia).
+    # Warstwy (każda kolejna jest mniej restrykcyjna, stosowana gdy poprzednia nie dała nic):
+    #   1. 4-cyfry: dokładne dopasowanie podkategorii
+    #   2. 3-cyfry: szerszy obszar CPV
+    #   3. fit_score > 0: gdy API SearchText przyniosło wyniki bez CPV — ufamy scorerowi
+    #      (ogłoszenia słabo pasujące CPV ale z dobrymi słowami kluczowymi mogą być trafne)
     if config.cpv_codes:
         filtered_by_cpv: list[NoticeRecord] = []
         for n in notices:
@@ -151,10 +156,7 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
             )
             if cpv_match:
                 filtered_by_cpv.append(n)
-        # Jeśli filtr CPV wycinałby wszystko (np. ogłoszenia bez kodu CPV w API)
-        # — wróć do filtra 2-cyfrowego zamiast przepuszczać wszystko
-        # Fallback 3-cyfrowy — tylko gdy 4-cyfrowy nie dał żadnych wyników
-        # (zdarza się gdy ogłoszenia mają skrócone kody CPV w API)
+
         if not filtered_by_cpv:
             for n in notices:
                 cpv_match_loose = any(
@@ -164,7 +166,14 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
                 )
                 if cpv_match_loose:
                     filtered_by_cpv.append(n)
-        # Jeśli nadal nic — nie przepuszczamy wszystkiego, tylko puste wyniki
+
+        # Fallback 3: gdy API SearchText pre-filtrował po słowach kluczowych,
+        # możliwe że BZP przypisał ogłoszeniu inny CPV niż oczekujemy.
+        # Przepuszczamy wyniki z niezerowym fit_score (scorer decyduje).
+        if not filtered_by_cpv and config.use_api_search_text:
+            filtered_by_cpv = [n for n in notices if n.fit_score > 0.0]
+            logger.debug("CPV fallback scorer: %d ogłoszeń z fit_score>0", len(filtered_by_cpv))
+
         if filtered_by_cpv:
             notices = filtered_by_cpv
         else:
