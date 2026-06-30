@@ -219,6 +219,7 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
                     config.ollama_url,
                     config.ollama_model,
                     config.ollama_fallback,
+                    body_text=n.body_text,
                 ): n
                 for n in passed
             }

@@ -23,6 +23,19 @@ Termin składania: {deadline}
 
 Zadanie: napisz 2-3 zdania (max 100 słów) — co trzeba zrobić, dla kogo, do kiedy. Bez zdań wstępnych."""
 
+_PROMPT_FULL_TMPL = """Poniżej pełna treść ogłoszenia BZP. Wyciągnij najważniejsze informacje.
+
+TREŚĆ OGŁOSZENIA:
+{body_text}
+
+Napisz analizę w 4 punktach (każdy 1 zdanie, łącznie max 120 słów):
+1. PRZEDMIOT: co dokładnie jest przedmiotem zamówienia
+2. WYMAGANIA: kluczowe wymagania wobec wykonawcy (doświadczenie, uprawnienia)
+3. KRYTERIA: kryteria oceny ofert (cena X%, jakość Y% itp.)
+4. UWAGI: wadium, termin realizacji lub inne istotne warunki
+
+Odpowiedz wyłącznie tymi 4 punktami, bez wstępów."""
+
 
 def _fallback_summary(title: str, org: str, city: str, deadline: str) -> str:
     """Szablon-based fallback gdy LLM niedostępny."""
@@ -41,14 +54,18 @@ def summarize(
     fallback_model: str = "llama3.2:3b",
     timeout_s: int = 30,
     use_llm: bool = True,
+    body_text: str = "",
 ) -> str:
     if not use_llm:
         return _fallback_summary(title, org, city, deadline)
 
-    prompt = _PROMPT_TMPL.format(
-        title=title, org=org, city=city,
-        order_type=order_type, cpv=cpv[:120], deadline=deadline,
-    )
+    if body_text:
+        prompt = _PROMPT_FULL_TMPL.format(body_text=body_text[:5500])
+    else:
+        prompt = _PROMPT_TMPL.format(
+            title=title, org=org, city=city,
+            order_type=order_type, cpv=cpv[:120], deadline=deadline,
+        )
 
     for mdl in [model, fallback_model]:
         try:
@@ -59,7 +76,7 @@ def summarize(
                     "prompt": prompt,
                     "system": _SYSTEM,
                     "stream": False,
-                    "options": {"temperature": 0.3, "num_predict": 150},
+                    "options": {"temperature": 0.3, "num_predict": 300},
                 },
                 timeout=timeout_s,
             )

@@ -90,6 +90,7 @@ class NoticeRecord:
     summary: str = ""               # wypełniane przez LLM
     fit_score: float = 0.0          # wypełniane przez workflow
     cost_estimate: Optional[dict] = None  # wypełniane przez kalkulator
+    body_text: str = ""             # czysty tekst z htmlBody (bez CSS/tagów)
 
     @property
     def cpv_prefixes(self) -> list[str]:
@@ -156,6 +157,21 @@ def _extract_value(html_body: str) -> Optional[float]:
     return None
 
 
+def _extract_body_text(html_body: str) -> str:
+    """Czyści htmlBody z tagów HTML i CSS, zwraca tekst ogłoszenia (max 6000 znaków)."""
+    if not html_body:
+        return ""
+    # Usuń blok <style> na początku (CSS)
+    text = re.sub(r"<style[^>]*>.*?</style>", " ", html_body, flags=re.DOTALL | re.IGNORECASE)
+    # Usuń wszystkie tagi HTML
+    text = re.sub(r"<[^>]+>", " ", text)
+    # Normalizuj whitespace
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text).strip()
+    # Ogranicz do 6000 znaków żeby nie przekroczyć okna kontekstu LLM
+    return text[:6000]
+
+
 def normalize_notice(raw: dict) -> NoticeRecord:
     """Przekształca surowy dict z API BZP na NoticeRecord."""
     object_id = raw.get("objectId", "")
@@ -183,6 +199,7 @@ def normalize_notice(raw: dict) -> NoticeRecord:
         link=BZPClientCompat.notice_url(object_id),
         is_below_eu_threshold=bool(raw.get("isTenderAmountBelowEU", True)),
         tender_value_pln=_extract_value(html_body),
+        body_text=_extract_body_text(html_body),
         raw=raw,
     )
 
