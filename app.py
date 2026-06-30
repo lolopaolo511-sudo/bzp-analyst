@@ -10,7 +10,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from sources.normalizer import NoticeRecord
+from sources.normalizer import NoticeRecord, PROVINCE_NAMES
 from workflow.pipeline import WorkflowConfig, WorkflowResult, run_pipeline
 
 # ---------------------------------------------------------------------------
@@ -74,6 +74,8 @@ CPV_PRESETS: dict[str, dict] = {
     },
 }
 
+ALL_PROVINCE_NAMES = sorted(PROVINCE_NAMES.values())
+
 # ---------------------------------------------------------------------------
 # Sidebar — filtry
 # ---------------------------------------------------------------------------
@@ -125,6 +127,30 @@ with st.sidebar:
     )
 
     st.divider()
+
+    # --- [2] Filtr województwa ---
+    st.markdown("**Województwa** *(puste = wszystkie)*")
+    province_filter: list[str] = st.multiselect(
+        "provinces",
+        options=ALL_PROVINCE_NAMES,
+        default=[],
+        label_visibility="collapsed",
+        placeholder="Wybierz województwa...",
+    )
+
+    # --- [3] Filtr wartości zamówienia ---
+    st.markdown("**Wartość zamówienia (PLN)**")
+    vcol1, vcol2 = st.columns(2)
+    min_value = vcol1.number_input(
+        "Min PLN", min_value=0, max_value=50_000_000, value=0, step=10_000,
+        help="0 = bez limitu minimum",
+    )
+    max_value = vcol2.number_input(
+        "Max PLN", min_value=0, max_value=50_000_000, value=0, step=100_000,
+        help="0 = bez limitu maksimum",
+    )
+
+    st.divider()
     search_btn = st.button("🔍 Szukaj przetargów", type="primary", width="stretch")
 
 # ---------------------------------------------------------------------------
@@ -169,7 +195,9 @@ config = WorkflowConfig(
     days_back=days_back,
     min_fit_score=min_score,
     max_deadline_days=max_deadline,
-    use_llm=False,  # Ollama niedostępna w środowisku chmurowym
+    min_value_pln=float(min_value),
+    max_value_pln=float(max_value),
+    use_llm=False,
 )
 
 progress_placeholder = st.empty()
@@ -188,16 +216,21 @@ except Exception as exc:
 
 progress_placeholder.empty()
 
+# --- [2] Filtr województwa (client-side po wyniku pipeline) ---
+notices = result.notices
+if province_filter:
+    notices = [n for n in notices if n.province_name in province_filter]
+
 # ---------------------------------------------------------------------------
 # Statystyki
 # ---------------------------------------------------------------------------
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Pobrano z API", result.total_fetched)
-col2.metric("Po filtrach", result.total_after_filter)
+col2.metric("Po filtrach", len(notices))
 col3.metric("Odrzucono", len(result.rejected))
 col4.metric("Zakres dat", f"{days_back}d")
 
-if not result.notices:
+if not notices:
     st.warning(
         "Brak wyników spełniających kryteria.  \n"
         "**Wskazówki:** zwiększ zakres dni, zmniejsz min. score, "
@@ -237,15 +270,29 @@ def _cpv_short(n: NoticeRecord, max_codes: int = 2) -> str:
         parts.append(f"+{len(n.cpv_codes) - max_codes}")
     return ", ".join(parts)
 
+
+def _breakdown_label(raw: dict) -> str:
+    """Kompaktowy tekst z sub-scores: CPV·KW·DL·VAL"""
+    bd = raw.get("_score_breakdown", {})
+    if not bd:
+        return "–"
+    cpv = bd.get("cpv", 0)
+    kw  = bd.get("kw", 0)
+    dl  = bd.get("deadline", 0)
+    val = bd.get("value", 0)
+    return f"CPV {cpv:.2f} · KW {kw:.2f} · DL {dl:.2f} · VAL {val:.2f}"
+
+
 # ---------------------------------------------------------------------------
 # Tabela wyników
 # ---------------------------------------------------------------------------
-st.markdown(f"### Znalezione przetargi ({len(result.notices)})")
+st.markdown(f"### Znalezione przetargi ({len(notices)})")
 
 rows = []
-for n in result.notices:
+for n in notices:
     rows.append({
         "Score": _score_badge(n.fit_score),
+        "Składowe": _breakdown_label(n.raw),          # [1] breakdown
         "Tytuł": n.title[:100] + ("…" if len(n.title) > 100 else ""),
         "Zamawiający": n.organization[:55] + ("…" if len(n.organization) > 55 else ""),
         "Miasto": n.city or "–",
@@ -258,19 +305,22 @@ for n in result.notices:
         "_nr": n.bzp_number,
         "_score_raw": round(n.fit_score, 4),
         "_deadline_days": n.days_until_deadline,
+        "_value_pln": n.tender_value_pln,
     })
 
 df = pd.DataFrame(rows)
-display_cols = ["Score", "Tytuł", "Zamawiający", "Miasto", "Województwo", "Termin", "Typ", "CPV", "Link BZP"]
+display_cols = ["Score", "Składowe", "Tytuł", "Zamawiający", "Miasto",
+                "Województwo", "Termin", "Typ", "CPV", "Link BZP"]
 
 st.dataframe(
     df[display_cols],
     use_container_width=True,
     hide_index=True,
-    height=min(60 + len(result.notices) * 35, 700),
+    height=min(60 + len(notices) * 35, 700),
     column_config={
         "Link BZP": st.column_config.LinkColumn("Link BZP", display_text="🔗 Otwórz"),
         "Score": st.column_config.TextColumn("Score", width="small"),
+        "Składowe": st.column_config.TextColumn("Składowe (CPV·KW·DL·VAL)", width="large"),
         "Termin": st.column_config.TextColumn("Termin", width="small"),
         "Typ": st.column_config.TextColumn("Typ ogłoszenia", width="medium"),
         "CPV": st.column_config.TextColumn("CPV", width="medium"),
@@ -280,9 +330,15 @@ st.dataframe(
 # ---------------------------------------------------------------------------
 # Pobieranie CSV
 # ---------------------------------------------------------------------------
-csv_cols = ["_nr", "Score", "_score_raw", "Tytuł", "Zamawiający", "Miasto",
-            "Województwo", "_deadline_days", "Termin", "Typ", "CPV", "Link BZP"]
-csv_df = df[csv_cols].rename(columns={"_nr": "Nr BZP", "_score_raw": "Score (0-1)", "_deadline_days": "Termin (dni)"})
+csv_cols = ["_nr", "Score", "_score_raw", "Składowe", "Tytuł", "Zamawiający",
+            "Miasto", "Województwo", "_deadline_days", "Termin", "Typ", "CPV",
+            "_value_pln", "Link BZP"]
+csv_df = df[csv_cols].rename(columns={
+    "_nr": "Nr BZP",
+    "_score_raw": "Score (0-1)",
+    "_deadline_days": "Termin (dni)",
+    "_value_pln": "Wartość (PLN)",
+})
 
 today_str = datetime.today().strftime("%Y%m%d")
 st.download_button(

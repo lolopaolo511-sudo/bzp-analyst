@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from sources.bzp_client import BZPClient, BZPQuery
 from sources.normalizer import normalize_notice, NoticeRecord
-from workflow.scorer import score_notice, adversarial_verify
+from workflow.scorer import score_notice, score_breakdown, adversarial_verify
 from workflow.summarizer import summarize
 
 logger = logging.getLogger("bzp_analyst.pipeline")
@@ -36,6 +36,7 @@ class WorkflowConfig:
     min_fit_score: float = 0.3
     max_deadline_days: int = 0
     min_value_pln: float = 0.0
+    max_value_pln: float = 0.0
     max_workers: int = 4
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = "deepseek-coder-v2:16b"
@@ -123,6 +124,12 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
             include_keywords=config.keywords_include,
             exclude_keywords=config.keywords_exclude,
         )
+        n.raw["_score_breakdown"] = score_breakdown(
+            n,
+            target_cpvs=config.cpv_codes,
+            include_keywords=config.keywords_include,
+            exclude_keywords=config.keywords_exclude,
+        )
 
     # Client-side CPV filter: jeśli mamy CPV, odrzucamy ogłoszenia bez żadnego dopasowania.
     # Porównujemy pierwsze 4 cyfry (nie 2!) dla precyzji. Fallback na fit_score usunięty —
@@ -156,9 +163,11 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
         else:
             notices = []
 
-    # Wartość minimalna
+    # Wartość minimalna / maksymalna
     if config.min_value_pln > 0:
         notices = [n for n in notices if n.tender_value_pln is None or n.tender_value_pln >= config.min_value_pln]
+    if config.max_value_pln > 0:
+        notices = [n for n in notices if n.tender_value_pln is None or n.tender_value_pln <= config.max_value_pln]
 
     # Termin składania
     if config.max_deadline_days > 0:

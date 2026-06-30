@@ -131,6 +131,25 @@ def score_notice(
     return round(min(1.0, score), 3)
 
 
+def score_breakdown(
+    notice: NoticeRecord,
+    target_cpvs: list[str],
+    include_keywords: list[str],
+    exclude_keywords: list[str],
+    weights: Optional[dict] = None,
+) -> dict:
+    """Zwraca sub-scores dla przejrzystości scoringu."""
+    w = weights or {"cpv": 0.40, "kw": 0.35, "deadline": 0.15, "value": 0.10}
+    kw_text = f"{notice.title} {' '.join(c.description for c in notice.cpv_codes)}"
+    return {
+        "cpv": round(_cpv_match_score(notice.cpv_prefixes, target_cpvs), 3),
+        "kw": round(_keyword_score(kw_text, include_keywords, exclude_keywords), 3),
+        "deadline": round(_deadline_score(notice.days_until_deadline), 3),
+        "value": round(_value_score(notice.tender_value_pln), 3),
+        "weights": w,
+    }
+
+
 def adversarial_verify(notice: NoticeRecord, min_score: float = 0.3) -> tuple[bool, str]:
     """
     Weryfikator (adversarial): odsiewa oczywisty szum.
