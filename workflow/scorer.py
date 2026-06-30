@@ -29,16 +29,30 @@ def _cpv_match_score(notice_cpvs: list[str], target_cpvs: list[str]) -> float:
     return best
 
 
+def _kw_in_text(kw: str, text: str) -> bool:
+    """Sprawdza czy słowo kluczowe jest w tekście.
+
+    Obsługuje polską fleksję: "impreza" matchuje "imprezy", "imprezie" itd.
+    przez odcięcie ostatniej litery (rdzeń) dla słów >= 5 znaków.
+    """
+    kw_low = kw.lower()
+    if kw_low in text:
+        return True
+    if len(kw_low) >= 5 and kw_low[:-1] in text:
+        return True
+    return False
+
+
 def _keyword_score(text: str, include_kws: list[str], exclude_kws: list[str]) -> float:
     """Score słów kluczowych w tekście ogłoszenia."""
     if not include_kws:
         return 0.5  # brak konfiguracji = neutralny
     text_low = text.lower()
-    # Wykluczenie twardym filterm
+    # Wykluczenie — sprawdzamy przez rdzeń żeby złapać odmianę ("wyburzenia" → "wyburzenie")
     for kw in exclude_kws:
-        if kw.lower() in text_low:
+        if _kw_in_text(kw, text_low):
             return 0.0
-    matches = sum(1 for kw in include_kws if kw.lower() in text_low)
+    matches = sum(1 for kw in include_kws if _kw_in_text(kw, text_low))
     return matches / len(include_kws)
 
 
@@ -89,9 +103,15 @@ def score_notice(
     """
     w = weights or {"cpv": 0.40, "kw": 0.35, "deadline": 0.15, "value": 0.10}
 
-    cpv_s = _cpv_match_score(notice.cpv_prefixes, target_cpvs)
-    # Szukamy słów kluczowych tylko w tytule i opisach CPV (nie w nazwie organizacji)
     kw_text = f"{notice.title} {' '.join(c.description for c in notice.cpv_codes)}"
+    kw_text_low = kw_text.lower()
+
+    # Wykluczone słowa → twardy veto niezależnie od CPV
+    for excl in exclude_keywords:
+        if _kw_in_text(excl, kw_text_low):
+            return 0.0
+
+    cpv_s = _cpv_match_score(notice.cpv_prefixes, target_cpvs)
     kw_s = _keyword_score(kw_text, include_keywords, exclude_keywords)
 
     # Twarda reguła: brak dopasowania w obu wymiarach = wyrzucamy

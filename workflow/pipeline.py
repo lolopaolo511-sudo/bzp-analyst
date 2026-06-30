@@ -139,17 +139,22 @@ def run_pipeline(config: WorkflowConfig) -> WorkflowResult:
                 filtered_by_cpv.append(n)
         # Jeśli filtr CPV wycinałby wszystko (np. ogłoszenia bez kodu CPV w API)
         # — wróć do filtra 2-cyfrowego zamiast przepuszczać wszystko
+        # Fallback 3-cyfrowy — tylko gdy 4-cyfrowy nie dał żadnych wyników
+        # (zdarza się gdy ogłoszenia mają skrócone kody CPV w API)
         if not filtered_by_cpv:
             for n in notices:
                 cpv_match_loose = any(
-                    nc.replace("-", "")[:2] == tc.replace("-", "")[:2]
+                    nc.replace("-", "")[:3] == tc.replace("-", "")[:3]
                     for nc in n.cpv_prefixes
                     for tc in config.cpv_codes
                 )
                 if cpv_match_loose:
                     filtered_by_cpv.append(n)
+        # Jeśli nadal nic — nie przepuszczamy wszystkiego, tylko puste wyniki
         if filtered_by_cpv:
             notices = filtered_by_cpv
+        else:
+            notices = []
 
     # Wartość minimalna
     if config.min_value_pln > 0:
