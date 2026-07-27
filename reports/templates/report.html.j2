@@ -101,7 +101,7 @@
     <strong>Szacunek kosztów oferty:</strong>
     {{ n.cost_estimate.summary_line() }}<br>
     {% if n.cost_estimate.distance_km > 0 %}
-    <span>Dystans: {{ n.cost_estimate.distance_km:.0f }} km | Transport: {{ '{:,.0f}'.format(n.cost_estimate.transport_cost).replace(',', ' ') }} PLN</span>
+    <span>Dystans: {{ n.cost_estimate.distance_km | round | int }} km | Transport: {{ '{:,.0f}'.format(n.cost_estimate.transport_cost).replace(',', ' ') }} PLN</span>
     {% endif %}
     <table class="breakdown">
       <tr><th>Pozycja</th><th>Kwota PLN</th></tr>

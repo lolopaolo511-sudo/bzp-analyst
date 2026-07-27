@@ -70,6 +70,7 @@ notifications:
   telegram_bot_token: ""     # opcjonalnie (z .env: BZP_TELEGRAM_TOKEN)
   telegram_chat_id: ""       # opcjonalnie (z .env: BZP_TELEGRAM_CHAT)
   email_to: ""               # opcjonalnie (z .env)
+  make_webhook_url: ""       # Make.com webhook URL (z .env: MAKE_WEBHOOK_URL)
 
 # === OLLAMA (LLM streszczenia) ===
 ollama:

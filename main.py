@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from sources.bzp_client import BZPClient, BZPQuery
 from sources.normalizer import normalize_notice
-from workflow.pipeline import BZPWorkflow, WorkflowConfig, run_pipeline
+from workflow.pipeline import WorkflowConfig, run_pipeline
 from calculator.offer_calculator import OfferCalculator
 from reports.generator import ReportGenerator
 
@@ -91,15 +91,17 @@ def add_cost_estimates(notices, cfg: dict) -> None:
             logger.debug("Błąd kalkulacji dla %s: %s", n.bzp_number, e)
 
 
-def send_notifications(report_paths: dict, cfg: dict) -> None:
-    """Opcjonalne powiadomienia (Slack/Telegram/Make)."""
+def send_notifications(report_paths: dict, cfg: dict, context: dict | None = None) -> None:
+    """Opcjonalne powiadomienia (Slack/Telegram/Make.com)."""
     slack_url = os.getenv("BZP_SLACK_WEBHOOK", cfg.get("notifications", {}).get("slack_webhook_url", ""))
     telegram_token = os.getenv("BZP_TELEGRAM_TOKEN", "")
     telegram_chat = os.getenv("BZP_TELEGRAM_CHAT", "")
-    make_url = os.getenv("MAKE_WEBHOOK_URL", "")
+    make_url = os.getenv("MAKE_WEBHOOK_URL", cfg.get("notifications", {}).get("make_webhook_url", ""))
 
     md_path = report_paths.get("markdown")
-    notice_count = 0  # będzie nadpisane przez wywołującego
+    ctx = context or {}
+    notices = ctx.get("notices", [])
+    top = notices[0] if notices else None
 
     if slack_url:
         try:
@@ -127,12 +129,18 @@ def send_notifications(report_paths: dict, cfg: dict) -> None:
         try:
             import requests
             requests.post(make_url, json={
+                "run_date": ctx.get("date", str(date.today())),
                 "report_date": str(date.today()),
-                "report_path": str(md_path),
+                "report_path": str(md_path) if md_path else "",
+                "total_fetched": ctx.get("total_fetched", 0),
+                "total_found": ctx.get("total_filtered", len(notices)),
+                "tender_count": len(notices),
+                "top_score": round(float(top.fit_score), 3) if top and hasattr(top, "fit_score") else 0,
+                "duration_s": 0,
             }, timeout=5)
-            logger.info("Make webhook: wysłano")
+            logger.info("Make.com webhook: wysłano digest")
         except Exception as e:
-            logger.warning("Make webhook error: %s", e)
+            logger.warning("Make.com webhook error: %s", e)
 
 
 def main():
@@ -208,7 +216,7 @@ def main():
         if path:
             logger.info("  %s: %s", fmt.upper(), path)
 
-    send_notifications(report_paths, cfg)
+    send_notifications(report_paths, cfg, context=context)
     _print_summary(notices)
 
 
@@ -316,7 +324,6 @@ def _mock_notices():
             fit_score=0.68,
         ),
     ]
-    from datetime import timedelta
     return mock
 
 

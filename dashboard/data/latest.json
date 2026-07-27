@@ -1,332 +1,85 @@
 {
   "date": "2026-06-05",
-  "generated_at": "2026-06-05 11:04",
-  "date_from": "2026-06-03",
+  "generated_at": "2026-06-05 19:40",
+  "date_from": "2026-05-29",
   "date_to": "2026-06-05",
   "cpv_codes": [
+    "45310000",
     "72000000",
-    "72500000",
-    "45310000"
+    "72500000"
   ],
   "keywords": [
+    "serwis",
     "informatyczny",
-    "serwis"
+    "instalacja"
   ],
-  "total_fetched": 45,
-  "total_filtered": 45,
+  "total_fetched": 5,
+  "total_filtered": 5,
   "notices": [
     {
-      "id": "08dec136-077c-51cc-5fad-9500015c4daf",
-      "bzp_number": "2026/BZP 00273631/01",
-      "title": "Przebudowa sali wykładowej nr 457 w Gmachu Głównym Politechniki Gdańskiej.",
-      "organization": "Politechnika Gdańska",
-      "city": "Gdańsk",
-      "province_name": "Śląskie",
+      "id": "3040d4bc-8bfb-438e-8a7f-225dc561104a",
+      "bzp_number": "2026/BZP 00999001/01",
+      "title": "Usługi informatyczne i serwis systemów IT dla urzędu gminy",
+      "organization": "Urząd Gminy Kraków",
+      "city": "Kraków",
+      "province_name": "Małopolskie",
       "notice_type_label": "Ogłoszenie o zamówieniu",
-      "order_type": "Works",
-      "order_type_label": "Roboty budowlane",
+      "order_type": "Services",
+      "order_type_label": "Usługi",
       "cpv_codes": [
         {
-          "code": "45000000-7",
-          "description": "Roboty budowlane"
-        },
-        {
-          "code": "45111300-1",
-          "description": "Roboty rozbiórkowe"
-        },
-        {
-          "code": "45111220-6",
-          "description": "Roboty w zakresie usuwania gruzu"
-        },
-        {
-          "code": "45262522-6",
-          "description": "Roboty murarskie"
-        },
-        {
-          "code": "45311000-0",
-          "description": "Roboty w zakresie okablowania oraz instalacji elektrycznych"
-        },
-        {
-          "code": "45311200-2",
-          "description": "Roboty w zakresie instalacji elektrycznych"
-        },
-        {
-          "code": "45310000-3",
-          "description": "Roboty instalacyjne elektryczne"
-        },
-        {
-          "code": "45330000-9",
-          "description": "Roboty instalacyjne wodno-kanalizacyjne i sanitarne"
-        },
-        {
-          "code": "45332300-6",
-          "description": "Roboty instalacyjne kanalizacyjne"
-        },
-        {
-          "code": "45400000-1",
-          "description": "Roboty wykończeniowe w zakresie obiektów budowlanych"
-        },
-        {
-          "code": "45442100-8",
-          "description": "Roboty malarskie"
-        },
-        {
-          "code": "45320000-6",
-          "description": "Roboty izolacyjne"
-        },
-        {
-          "code": "45314000-1",
-          "description": "Instalowanie urządzeń telekomunikacyjnych"
-        },
-        {
-          "code": "45453000-7",
-          "description": "Roboty remontowe i renowacyjne"
-        },
-        {
-          "code": "45421000-4",
-          "description": "Roboty w zakresie stolarki budowlanej"
-        },
-        {
-          "code": "45421146-9",
-          "description": "Instalowanie sufitów podwieszanych"
-        },
-        {
-          "code": "45430000-0",
-          "description": "Pokrywanie podłóg i ścian"
-        },
-        {
-          "code": "45331100-7",
-          "description": "Instalowanie centralnego ogrzewania"
-        },
-        {
-          "code": "39100000-3",
-          "description": "Meble"
-        },
-        {
-          "code": "39515400-9",
-          "description": "Rolety"
-        },
-        {
-          "code": "32340000-8",
-          "description": "Mikrofony i głośniki"
+          "code": "72000000-5",
+          "description": "Usługi informatyczne"
         }
       ],
-      "publication_date": "2026-06-03T06:04:53.069503",
-      "submission_deadline": "2026-06-22T09:00:00",
-      "tender_value_pln": 270000.0,
-      "summary": "",
-      "fit_score": 0.65,
-      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/08dec136-077c-51cc-5fad-9500015c4daf",
+      "publication_date": "2026-06-05T19:40:02.825998",
+      "submission_deadline": "2026-06-19T12:00:00",
+      "tender_value_pln": 150000.0,
+      "summary": "Kompleksowa obsługa IT dla urzędu: serwis sprzętu, wsparcie użytkowników, administracja systemami.",
+      "fit_score": 0.85,
+      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/demo-1",
       "cost_estimate": {
-        "target_city": "Gdańsk",
-        "distance_km": 382.8,
-        "transport_cost": 2161.38,
+        "target_city": "Kraków",
+        "distance_km": 340.2,
+        "transport_cost": 2085.56,
         "equipment_cost": 0.0,
         "labor_cost": 4800.0,
         "materials_cost": 0.0,
-        "gross_cost": 6961.38,
-        "margin_amount": 1740.35,
-        "net_price": 8701.73,
-        "vat_amount": 2001.4,
-        "total_gross": 10703.13,
-        "min_price": 9097.65,
-        "realistic_price": 10703.13,
-        "max_price": 13378.9,
+        "gross_cost": 6885.56,
+        "margin_amount": 1721.39,
+        "net_price": 8606.95,
+        "vat_amount": 1979.6,
+        "total_gross": 10586.55,
+        "min_price": 8998.57,
+        "realistic_price": 10586.55,
+        "max_price": 13233.19,
         "notes": [
           "Zakłada 5 dni realizacji, 4 noclegów"
         ]
       }
     },
     {
-      "id": "08dec13d-a398-72e5-5fad-9500015c4eaf",
-      "bzp_number": "2026/BZP 00273821/01",
-      "title": "Termomodernizacja wraz z wymianą źródeł ciepła mieszkalnych budynków komunalnych i wspólnot na obszarze gmin Ziemi Kłodzkiej - Duszniki-Zdrój",
-      "organization": "GMINA MIEJSKA DUSZNIKI-ZDRÓJ",
-      "city": "Duszniki-Zdrój",
-      "province_name": "PL02",
-      "notice_type_label": "Ogłoszenie o zamówieniu",
-      "order_type": "Works",
-      "order_type_label": "Roboty budowlane",
-      "cpv_codes": [
-        {
-          "code": "45320000-6",
-          "description": "Roboty izolacyjne"
-        },
-        {
-          "code": "45100000-8",
-          "description": "Przygotowanie terenu pod budowę"
-        },
-        {
-          "code": "45260000-7",
-          "description": "Roboty w zakresie wykonywania pokryć i konstrukcji dachowych i inne podobne roboty specjalistycze"
-        },
-        {
-          "code": "45310000-3",
-          "description": "Roboty instalacyjne elektryczne"
-        },
-        {
-          "code": "45450000-6",
-          "description": "Roboty budowlane wykończeniowe, pozostałe"
-        },
-        {
-          "code": "45321000-3",
-          "description": "Izolacja cieplna"
-        }
-      ],
-      "publication_date": "2026-06-03T06:59:21.492590",
-      "submission_deadline": "2026-06-17T12:00:00",
-      "tender_value_pln": 400000.0,
-      "summary": "",
-      "fit_score": 0.65,
-      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/08dec13d-a398-72e5-5fad-9500015c4eaf",
-      "cost_estimate": {
-        "target_city": "Duszniki-Zdrój",
-        "distance_km": 516.6,
-        "transport_cost": 2399.55,
-        "equipment_cost": 0.0,
-        "labor_cost": 4800.0,
-        "materials_cost": 0.0,
-        "gross_cost": 7199.55,
-        "margin_amount": 1799.89,
-        "net_price": 8999.44,
-        "vat_amount": 2069.87,
-        "total_gross": 11069.31,
-        "min_price": 9408.91,
-        "realistic_price": 11069.31,
-        "max_price": 13836.64,
-        "notes": [
-          "Zakłada 5 dni realizacji, 4 noclegów"
-        ]
-      }
-    },
-    {
-      "id": "08dec140-780b-2c40-5fad-9500015c4f43",
-      "bzp_number": "2026/BZP 00273926/01",
-      "title": "Dokończenie budowy zaplecza sanitarnego i kuchennego \nprzy budynku świetlicy wiejskiej w Bysławiu",
-      "organization": "GMINA LUBIEWO",
-      "city": "Lubiewo",
-      "province_name": "PL04",
-      "notice_type_label": "Ogłoszenie o zamówieniu",
-      "order_type": "Works",
-      "order_type_label": "Roboty budowlane",
-      "cpv_codes": [
-        {
-          "code": "45000000-7",
-          "description": "Roboty budowlane"
-        },
-        {
-          "code": "45111300-1",
-          "description": "Roboty rozbiórkowe"
-        },
-        {
-          "code": "45111200-0",
-          "description": "Roboty w zakresie przygotowania terenu pod budowę i roboty ziemne"
-        },
-        {
-          "code": "45210000-2",
-          "description": "Roboty budowlane w zakresie budynków"
-        },
-        {
-          "code": "45300000-0",
-          "description": "Roboty instalacyjne w budynkach"
-        },
-        {
-          "code": "45310000-3",
-          "description": "Roboty instalacyjne elektryczne"
-        },
-        {
-          "code": "45330000-9",
-          "description": "Roboty instalacyjne wodno-kanalizacyjne i sanitarne"
-        },
-        {
-          "code": "45331000-6",
-          "description": "Instalowanie urządzeń grzewczych, wentylacyjnych i klimatyzacyjnych"
-        },
-        {
-          "code": "45400000-1",
-          "description": "Roboty wykończeniowe w zakresie obiektów budowlanych"
-        },
-        {
-          "code": "45321000-3",
-          "description": "Izolacja cieplna"
-        },
-        {
-          "code": "45262500-6",
-          "description": "Roboty murarskie i murowe"
-        },
-        {
-          "code": "45421000-4",
-          "description": "Roboty w zakresie stolarki budowlanej"
-        },
-        {
-          "code": "45442100-8",
-          "description": "Roboty malarskie"
-        },
-        {
-          "code": "45233200-1",
-          "description": "Roboty w zakresie różnych nawierzchni"
-        },
-        {
-          "code": "45112710-5",
-          "description": "Roboty w zakresie kształtowania terenów zielonych"
-        }
-      ],
-      "publication_date": "2026-06-03T07:19:36.915033",
-      "submission_deadline": "2026-06-18T08:00:00",
-      "tender_value_pln": 300000.0,
-      "summary": "",
-      "fit_score": 0.65,
-      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/08dec140-780b-2c40-5fad-9500015c4f43",
-      "cost_estimate": {
-        "target_city": "Lubiewo",
-        "distance_km": 242.1,
-        "transport_cost": 1910.94,
-        "equipment_cost": 0.0,
-        "labor_cost": 4800.0,
-        "materials_cost": 0.0,
-        "gross_cost": 6710.94,
-        "margin_amount": 1677.73,
-        "net_price": 8388.67,
-        "vat_amount": 1929.39,
-        "total_gross": 10318.06,
-        "min_price": 8770.36,
-        "realistic_price": 10318.06,
-        "max_price": 12897.59,
-        "notes": [
-          "Zakłada 5 dni realizacji, 4 noclegów"
-        ]
-      }
-    },
-    {
-      "id": "08dec138-dae2-8bc2-5fad-9500015c4e0e",
-      "bzp_number": "2026/BZP 00273704/01",
-      "title": "Remont poszycia dachowego w budynku mieszkalnym w Antoniewie",
-      "organization": "Państwowe Gospodarstwo Wodne Wody Polskie",
+      "id": "a086bef4-950d-4f46-a5ca-4f5c9cfb4d7c",
+      "bzp_number": "2026/BZP 00999002/01",
+      "title": "Instalacja elektryczna i okablowanie strukturalne w budynku szkoły",
+      "organization": "Szkoła Podstawowa nr 12",
       "city": "Warszawa",
-      "province_name": "PL14",
-      "notice_type_label": "Ogłoszenie o zamówieniu",
+      "province_name": "Mazowieckie",
+      "notice_type_label": "Zamówienie małe",
       "order_type": "Works",
       "order_type_label": "Roboty budowlane",
       "cpv_codes": [
         {
-          "code": "45453000-7",
-          "description": "Roboty remontowe i renowacyjne"
-        },
-        {
-          "code": "45260000-7",
-          "description": "Roboty w zakresie wykonywania pokryć i konstrukcji dachowych i inne podobne roboty specjalistycze"
-        },
-        {
           "code": "45310000-3",
-          "description": "Roboty instalacyjne elektryczne"
+          "description": "Roboty elektryczne"
         }
       ],
-      "publication_date": "2026-06-03T06:25:06.768905",
-      "submission_deadline": "2026-06-19T08:00:00",
-      "tender_value_pln": null,
-      "summary": "",
-      "fit_score": 0.6,
-      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/08dec138-dae2-8bc2-5fad-9500015c4e0e",
+      "publication_date": "2026-06-05T19:40:02.826009",
+      "submission_deadline": "2026-06-15T12:00:00",
+      "tender_value_pln": 85000.0,
+      "summary": "Modernizacja instalacji elektrycznej i okablowania w 12 salach lekcyjnych.",
+      "fit_score": 0.72,
+      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/demo-2",
       "cost_estimate": {
         "target_city": "Warszawa",
         "distance_km": 0.0,
@@ -346,54 +99,138 @@
       }
     },
     {
-      "id": "08dec12b-17ec-461f-5fad-9500015c4d16",
-      "bzp_number": "2026/BZP 00273533/01",
-      "title": "Remont pomieszczeń higieniczno-sanitarnych w szatni basenowej w obiekcie Kaliskiego Parku Wodnego przy ul. Sportowej 10 w Kaliszu",
-      "organization": "\"AQUAPARK KALISZ\" SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
-      "city": "Kalisz",
-      "province_name": "PL30",
+      "id": "1f56b1c6-8d5c-4337-bc72-ada4da517da3",
+      "bzp_number": "2026/BZP 00999003/01",
+      "title": "Wdrożenie systemu DMS i serwis oprogramowania do zarządzania dokumentami",
+      "organization": "Starostwo Powiatowe Wrocław",
+      "city": "Wrocław",
+      "province_name": "Dolnośląskie",
       "notice_type_label": "Ogłoszenie o zamówieniu",
+      "order_type": "Services",
+      "order_type_label": "Usługi",
+      "cpv_codes": [
+        {
+          "code": "72500000-0",
+          "description": "Usługi komputerowe"
+        },
+        {
+          "code": "72260000-5",
+          "description": "Usługi w zakresie oprogramowania"
+        }
+      ],
+      "publication_date": "2026-06-05T19:40:02.826016",
+      "submission_deadline": "2026-06-26T10:00:00",
+      "tender_value_pln": 200000.0,
+      "summary": "Wdrożenie DMS z migracją danych i szkoleniami dla 50 użytkowników starostwa.",
+      "fit_score": 0.68,
+      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/demo-3",
+      "cost_estimate": {
+        "target_city": "Wrocław",
+        "distance_km": 406.4,
+        "transport_cost": 2203.39,
+        "equipment_cost": 0.0,
+        "labor_cost": 4800.0,
+        "materials_cost": 0.0,
+        "gross_cost": 7003.39,
+        "margin_amount": 1750.85,
+        "net_price": 8754.24,
+        "vat_amount": 2013.48,
+        "total_gross": 10767.72,
+        "min_price": 9152.56,
+        "realistic_price": 10767.72,
+        "max_price": 13459.64,
+        "notes": [
+          "Zakłada 5 dni realizacji, 4 noclegów"
+        ]
+      }
+    },
+    {
+      "id": "52ae3f02-4a37-48d7-a8fa-2f3454f6fbfd",
+      "bzp_number": "2026/BZP 00999004/01",
+      "title": "Remont i modernizacja instalacji elektrycznej w obiektach gminnych",
+      "organization": "Gmina Poznań",
+      "city": "Poznań",
+      "province_name": "Wielkopolskie",
+      "notice_type_label": "Zamówienie małe",
       "order_type": "Works",
       "order_type_label": "Roboty budowlane",
       "cpv_codes": [
         {
-          "code": "45453000-7",
-          "description": "Roboty remontowe i renowacyjne"
-        },
-        {
-          "code": "45430000-0",
-          "description": "Pokrywanie podłóg i ścian"
-        },
-        {
-          "code": "45330000-9",
-          "description": "Roboty instalacyjne wodno-kanalizacyjne i sanitarne"
+          "code": "45300000-0",
+          "description": "Roboty budowlane instalacyjne"
         },
         {
           "code": "45310000-3",
-          "description": "Roboty instalacyjne elektryczne"
+          "description": "Roboty elektryczne"
         }
       ],
-      "publication_date": "2026-06-03T04:46:36.207405",
-      "submission_deadline": "2026-06-19T08:00:00",
-      "tender_value_pln": 0.0,
-      "summary": "",
-      "fit_score": 0.57,
-      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/08dec12b-17ec-461f-5fad-9500015c4d16",
+      "publication_date": "2026-06-05T19:40:02.826021",
+      "submission_deadline": "2026-06-23T09:00:00",
+      "tender_value_pln": 120000.0,
+      "summary": "Remont instalacji elektrycznej w 5 budynkach gminnych w Poznaniu.",
+      "fit_score": 0.65,
+      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/demo-4",
       "cost_estimate": {
-        "target_city": "Kalisz",
-        "distance_km": 279.0,
-        "transport_cost": 1976.62,
+        "target_city": "Poznań",
+        "distance_km": 375.9,
+        "transport_cost": 2149.1,
         "equipment_cost": 0.0,
         "labor_cost": 4800.0,
         "materials_cost": 0.0,
-        "gross_cost": 6776.62,
-        "margin_amount": 1694.15,
-        "net_price": 8470.77,
-        "vat_amount": 1948.28,
-        "total_gross": 10419.05,
-        "min_price": 8856.2,
-        "realistic_price": 10419.05,
-        "max_price": 13023.82,
+        "gross_cost": 6949.1,
+        "margin_amount": 1737.28,
+        "net_price": 8686.38,
+        "vat_amount": 1997.87,
+        "total_gross": 10684.25,
+        "min_price": 9081.61,
+        "realistic_price": 10684.25,
+        "max_price": 13355.3,
+        "notes": [
+          "Zakłada 5 dni realizacji, 4 noclegów"
+        ]
+      }
+    },
+    {
+      "id": "42757b3f-03ac-4ee4-8b30-3fef5abb29fb",
+      "bzp_number": "2026/BZP 00999005/01",
+      "title": "Dostawa i wdrożenie oprogramowania dla systemu obsługi mieszkańców",
+      "organization": "Urząd Miejski Gdańsk",
+      "city": "Gdańsk",
+      "province_name": "Pomorskie",
+      "notice_type_label": "Ogłoszenie o zamówieniu",
+      "order_type": "Services",
+      "order_type_label": "Usługi",
+      "cpv_codes": [
+        {
+          "code": "72000000-5",
+          "description": "Usługi informatyczne"
+        },
+        {
+          "code": "48000000-8",
+          "description": "Pakiety oprogramowania"
+        }
+      ],
+      "publication_date": "2026-06-05T19:40:02.826025",
+      "submission_deadline": "2026-07-05T14:00:00",
+      "tender_value_pln": 350000.0,
+      "summary": "Dostawa licencji i wdrożenie zintegrowanego systemu obsługi mieszkańców dla urzędu miejskiego.",
+      "fit_score": 0.6,
+      "link": "https://ezamowienia.gov.pl/mo-client-board/bzp/notice-details/demo-5",
+      "cost_estimate": {
+        "target_city": "Gdańsk",
+        "distance_km": 382.8,
+        "transport_cost": 2161.38,
+        "equipment_cost": 0.0,
+        "labor_cost": 4800.0,
+        "materials_cost": 0.0,
+        "gross_cost": 6961.38,
+        "margin_amount": 1740.35,
+        "net_price": 8701.73,
+        "vat_amount": 2001.4,
+        "total_gross": 10703.13,
+        "min_price": 9097.65,
+        "realistic_price": 10703.13,
+        "max_price": 13378.9,
         "notes": [
           "Zakłada 5 dni realizacji, 4 noclegów"
         ]
